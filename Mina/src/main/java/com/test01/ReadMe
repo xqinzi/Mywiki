@@ -1,0 +1,4 @@
+>telnet 127.0.0.1 9123 
+>hello 
+Sun Mar 09 23:01:04 CST 2014
+>quit 

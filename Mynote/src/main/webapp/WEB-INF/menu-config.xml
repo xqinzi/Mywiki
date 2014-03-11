@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<MenuConfig>
+	<Displayers>
+		<Displayer name="TabbedMenu"
+			type="net.sf.navigator.displayer.TabbedMenuDisplayer" />
+	</Displayers>
+	<Menus>
+		<Menu name="Home" title="Contact" location="?Contact">
+			<Item name="email" title="E-Mail" location="?EMail" />
+			<Item name="phone" title="Phone" location="?Phone" />
+		</Menu>
+		<Menu name="About" title="Contact" location="?Contact">
+			<Item name="email" title="E-Mail" location="?EMail" />
+			<Item name="phone" title="Phone" location="?Phone" />
+		</Menu>
+	</Menus>
+</MenuConfig>
+
+<!-- <MenuConfig>
+	<Displayers>
+		<Displayer name="Velocity"
+			type="net.sf.navigator.displayer.VelocityMenuDisplayer" />
+	</Displayers>
+	<Menus>
+		<Menu name="Admin" title="menu.admin">
+			<Item name="Item1" title="menu.item1" page="/adminItem1.html" roles="ROLE_Admin">
+			</Item>
+		</Menu>
+	</Menus>
+</MenuConfig> -->

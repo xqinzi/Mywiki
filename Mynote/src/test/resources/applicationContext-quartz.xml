@@ -1,0 +1,61 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-3.1.xsd">
+
+	<!-- 定义具体的任务类 -->
+	<bean id="job" class="com.mywiki.util.quartz.MyJob" />
+
+	<!-- 定义jobDetail -->
+	<bean id="jobDetail"
+		class="org.springframework.scheduling.quartz.MethodInvokingJobDetailFactoryBean">
+		<!-- 目标类 -->
+		<property name="targetObject">
+			<ref bean="job" />
+		</property>
+		<!-- 目标类中要执行的方法 ,这个参数是必须的 -->
+		<property name="targetMethod">
+			<value>execute</value>
+		</property>
+	</bean>
+	
+	<!-- 简单的触发器 -->
+	<bean id="simpleTimingJobTrigger" class="org.springframework.scheduling.quartz.SimpleTriggerBean">
+		<property name="jobDetail">
+			<ref bean="jobDetail" />
+		</property>
+		<!-- 以毫秒为单位，启动后一分钟触发 -->
+		<property name="startDelay">
+			<value>60000</value>
+		</property>
+		<!-- 每间隔一分钟触发一次 -->
+		<property name="repeatInterval">
+			<value>60000</value>
+		</property>
+	</bean>
+
+	<bean id="jobDetail2" class="org.springframework.scheduling.quartz.JobDetailBean">
+		<!-- 目标类 -->
+		<property name="jobClass" value="com.mywiki.util.quartz.MyJob2"></property>
+	</bean>
+	
+	
+    <!-- 复杂的触发器 -->  
+    <bean id="cornTrigger" class="org.springframework.scheduling.quartz.CronTriggerBean">  
+       <property name="jobDetail" ref="jobDetail2"/>  
+       <!-- 每分的10秒种 -->  
+       <property name="cronExpression" value="10 * * * * ? *"/>  
+    </bean>   
+      
+    <!-- 定义核心调度器 -->  
+    <bean id="scheduler" class="org.springframework.scheduling.quartz.SchedulerFactoryBean">  
+    	<property name="triggers">
+			<list>
+				<ref bean="simpleTimingJobTrigger" />
+				<ref bean="cornTrigger"/>  
+				<!-- 继续添加其他触发器 -->
+			</list>
+		</property>
+    </bean>
+
+</beans>

@@ -1,0 +1,19 @@
+option java_package = "com.proto"; 
+option java_outer_classname = "SocketCommand";
+
+message RequestCommand {
+  required string command = 1; //要执行的命令
+  optional string auth = 3; //认证信息,如token等
+  optional bytes payload = 4;  //执行命令需要的消息
+  repeated KVStore params = 2;  //附带的参数,是键值对的数组
+}
+message KVStore {
+    required string key = 1;  //键值对的键(key)
+    optional bytes value = 2;  //键值对的值(value)
+}
+message ResponseCommand {
+    required bool success = 1;  //执行状态. true OR false
+    optional string message = 2;  //返回的消息提示
+    optional string error = 3;  //执行失败的error
+    repeated KVStore params = 5;  //返回携带的参数提示等
+}

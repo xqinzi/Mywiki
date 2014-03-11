@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:context="http://www.springframework.org/schema/context"
+	xmlns:sec="http://www.springframework.org/schema/security"
+	xmlns:jdbc="http://www.springframework.org/schema/jdbc"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans 
+    http://www.springframework.org/schema/beans/spring-beans-3.1.xsd
+    http://www.springframework.org/schema/context
+    http://www.springframework.org/schema/context/spring-context-3.1.xsd
+    http://www.springframework.org/schema/security
+	http://www.springframework.org/schema/security/spring-security-3.1.xsd
+	http://www.springframework.org/schema/jdbc
+	http://www.springframework.org/schema/jdbc/spring-jdbc-3.1.xsd">
+
+	<jdbc:embedded-database id="dataSource" Type="HSQL">
+		<jdbc:script location="classpath:securuty-scheme.sql"/>
+		<jdbc:script location="classpath:test-data.sql"/>
+	</jdbc:embedded-database>
+
+	<!-- 配置SpringSecurity的安全检查 -->
+	<sec:http create-session="stateless" use-expressions="true">
+		<sec:intercept-url pattern="/cxf/rest/sample/request/**" access="permitAll" />
+		<sec:intercept-url pattern="/cxf/rest/sample/list/" access="hasRole('admin')" />
+		<sec:intercept-url pattern="/cxf/rest/sample/map/" access="hasAnyRole('admin','customer')" />
+		<sec:http-basic />
+	</sec:http>
+	<sec:authentication-manager alias="authenticatonManager">
+		<sec:authentication-provider>
+			<sec:jdbc-user-service data-source-ref="dataSource"/>
+		</sec:authentication-provider>
+	</sec:authentication-manager>
+	
+</beans>

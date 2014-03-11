@@ -1,0 +1,12 @@
+<decorators defaultdir="/WEB-INF/jsp/decorators">
+    <!-- 此处定义不需要过滤的页面 -->  
+    <excludes>
+        
+    </excludes> 
+    
+    <!-- 此处用来定义装饰器需要过滤的页面 -->  
+    <decorator name="default" page="default.jsp">
+        <pattern>/*</pattern>
+    </decorator>
+    
+</decorators>

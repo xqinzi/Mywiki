@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:mvc="http://www.springframework.org/schema/mvc" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:jaxws="http://cxf.apache.org/jaxws" xmlns:p="http://www.springframework.org/schema/p"
+	xmlns:context="http://www.springframework.org/schema/context"
+	xsi:schemaLocation="
+		http://www.springframework.org/schema/beans
+		http://www.springframework.org/schema/beans/spring-beans-3.0.xsd
+		http://www.springframework.org/schema/context
+		http://www.springframework.org/schema/context/spring-context-3.0.xsd
+		http://www.springframework.org/schema/mvc
+		http://www.springframework.org/schema/mvc/spring-mvc.xsd
+		http://cxf.apache.org/jaxws 
+		http://cxf.apache.org/schemas/jaxws.xsd">
+
+	<import resource="classpath:META-INF/cxf/cxf.xml" />
+	<import resource="classpath:META-INF/cxf/cxf-extension-soap.xml" />
+	<import resource="classpath:META-INF/cxf/cxf-servlet.xml" />
+
+	<jaxws:client id="userWsClient" serviceClass="com.hoo.service.IComplexUserService" 
+        address="http://localhost:8080/cxf/Users"/>
+    
+    <!-- restful风格的webservice -->    
+    <bean id="webClient" class="org.apache.cxf.jaxrs.client.WebClient" factory-method="create">
+        <constructor-arg type="java.lang.String" value="http://localhost:8000/CXFWebService/rest/" />
+    </bean>
+    <!-- restful风格的webservice，客户端创建，直接创建类 --> 
+    <bean id="restSampleBean" class="org.apache.cxf.jaxrs.client.JAXRSClientFactory" factory-method="create">
+	    <constructor-arg type="java.lang.String" value="http://localhost:8000/CXFWebService/rest/" />
+	    <constructor-arg type="java.lang.Class" value="com.hoo.service.RESTSample" />
+	</bean>
+</beans>
