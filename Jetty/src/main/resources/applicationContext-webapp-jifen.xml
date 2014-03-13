@@ -1,0 +1,137 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:aop="http://www.springframework.org/schema/aop"
+	xmlns:context="http://www.springframework.org/schema/context" xmlns:tx="http://www.springframework.org/schema/tx"
+	xmlns:task="http://www.springframework.org/schema/task"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-3.1.xsd
+            http://www.springframework.org/schema/aop http://www.springframework.org/schema/aop/spring-aop-3.1.xsd
+            http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context-3.1.xsd
+            http://www.springframework.org/schema/tx http://www.springframework.org/schema/tx/spring-tx-3.1.xsd
+            http://www.springframework.org/schema/task http://www.springframework.org/schema/task/spring-task-3.1.xsd"
+	default-lazy-init="true">
+	
+	<!--
+	自动启动服务器方法
+	<bean id="server" class="org.eclipse.jetty.server.Server" init-method="start" destroy-method="stop" > -->
+	<bean id="server" class="org.eclipse.jetty.server.Server" >
+        <!-- Jetty8.x版本方式设置端口
+        <property name="connectors">  
+            <list>  
+                <bean id="Connector" class="org.eclipse.jetty.server.nio.SelectChannelConnector">  
+                    <property name="port" value="57080" />  
+                </bean>  
+            </list>  
+        </property> 
+        -->
+		<constructor-arg name="port" value="57080"/>
+		
+        <!-- <property name="handler" ref="context"></property> -->
+        <property name="handler">
+       		<bean id="handlers" class="org.eclipse.jetty.server.handler.HandlerList">  
+                <property name="handlers">  
+                    <list>
+                    	<!-- 自定义的handel要在前面 -->
+                    	<ref bean="contextHandler"/>
+                    	<ref bean="my1Handler"/>
+                    	
+                    	<!-- SpringMVC -->
+                    	<ref bean="webapp"/>
+                        <bean class="org.eclipse.jetty.server.handler.DefaultHandler" />
+                    </list>  
+                </property>  
+            </bean>
+        </property> 
+    </bean>
+
+	<!-- 对静态资源的访问 -->
+	<bean id="resourceHandler" class="org.eclipse.jetty.server.handler.ResourceHandler">
+		<property name="resourceBase" value="./webapp/resource/"/>
+	</bean>
+	<bean id="contextHandler" class="org.eclipse.jetty.server.handler.ContextHandler">
+		<property name="contextPath" value="/resource"/>
+		<property name="handler" ref="resourceHandler"/>
+	</bean>
+	
+	<!-- 自定义Handler -->
+	<bean id="myHandler" class="com.yxpai.webapps.jifen.handler.MyHandler" />
+	<bean id="my1Handler" class="com.yxpai.webapps.jifen.handler.My1Handler">
+		<property name="target" value="handel"/>
+	</bean>
+	
+	<!-- WebHandler,直接这样写，Spring和SpringMVC工厂之间没有父子关系
+	<bean id="webapp" class="org.eclipse.jetty.webapp.WebAppContext">
+    	<property name="contextPath" value="/"/>
+    	<property name="descriptor" value="./webapp/WEB-INF/web.xml"/>
+    	<property name="parentLoaderPriority" value="true"/>
+    	<property name="resourceBase" value="./webapp/"/>
+    </bean> -->
+    
+    <bean id="webapp" class="com.yxpai.webapps.jifen.util.WebAppContextUtil">
+    	<property name="contextPath" value="/"/>
+    	<property name="descriptor" value="./webapp/WEB-INF/web.xml"/>
+    	<property name="parentLoaderPriority" value="true"/>
+    	<property name="resourceBase" value="./webapp/"/>
+    </bean>
+
+	<bean id="propertiesReader"
+		class="org.springframework.beans.factory.config.PropertiesFactoryBean">
+		<property name="locations">
+			<list>
+				<value>classpath:application.properties</value>
+			</list>
+		</property>
+	</bean>
+	
+	<bean class="org.springframework.beans.factory.config.PropertyPlaceholderConfigurer">  
+        <property name="locations">  
+            <list>
+		    	<value>classpath:jdbc.properties</value>
+		   </list>
+        </property>  
+    </bean>
+
+	<bean id="dataSource"  
+        class="org.springframework.jdbc.datasource.DriverManagerDataSource">  
+        <property name="driverClassName" value="${jifen.jdbc.driverClassName}" />  
+        <property name="url" value="${jifen.jdbc.url}" />  
+        <property name="username" value="${jifen.jdbc.username}" />  
+        <property name="password" value="${jifen.jdbc.password}" />  
+    </bean>
+
+	<bean id="sessionFactory"  
+        class="org.springframework.orm.hibernate4.LocalSessionFactoryBean">  
+        <property name="dataSource" ref="dataSource" />  
+        <property name="packagesToScan">  
+            <list>  
+                <value>com.yxpai.webapps.jifen.model</value>  
+            </list>  
+        </property>
+        <property name="hibernateProperties">  
+            <props>  
+                <prop key="hibernate.dialect">${jifen.hibernate.dialect}</prop>  
+                <prop key="hibernate.show_sql">true</prop>  
+                <prop key="hibernate.cache.provider_class">org.hibernate.cache.EhCacheProvider</prop>  
+                <prop key="hibernate.cache.use_query_cache">false</prop>  
+                <prop key="hibernate.jdbc.batch_size">50</prop>  
+                <prop key="hibernate.cache.use_second_level_cache">false</prop>  
+                <prop key="hibernate.hbm2ddl.auto">update</prop>
+            </props>  
+        </property>
+    </bean>
+
+    <bean id="transactionManager"
+        class="org.springframework.orm.hibernate4.HibernateTransactionManager">  
+        <property name="sessionFactory" ref="sessionFactory" />  
+    </bean>
+    <tx:annotation-driven transaction-manager="transactionManager" />
+    
+    <context:component-scan base-package="com.yxpai.webapps.jifen">
+		<context:exclude-filter type="annotation" expression="org.springframework.stereotype.Controller" /> 
+	</context:component-scan> 
+
+	<context:annotation-config/>
+	
+    <task:annotation-driven />
+    
+    <bean id="jsonMap" class="com.fasterxml.jackson.databind.ObjectMapper"/>
+</beans>
