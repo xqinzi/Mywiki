@@ -1,4 +1,4 @@
-package org.ygy.quartz.lesson01;
+package lesson01;
 
 import org.quartz.Job;
 import org.quartz.JobExecutionContext;

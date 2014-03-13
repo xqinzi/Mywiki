@@ -1,4 +1,4 @@
-package org.spring;
+package spring;
 
 /**
  * 单独Job类形式

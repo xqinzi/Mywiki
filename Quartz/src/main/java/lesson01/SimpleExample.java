@@ -1,4 +1,4 @@
-package org.ygy.quartz.lesson01;
+package lesson01;
 
 import java.util.Date;
 
@@ -37,21 +37,38 @@ public class SimpleExample {
 
 		// 设置定时任务
 		sched.scheduleJob(job, trigger);
+/**
+		// define the job and tie it to our HelloJob class
+	    JobDetail job = JobBuilder
+	    				.newJob(HelloJob.class)
+	        			.withIdentity("job1", "group1")
+	        			.build();
 
+	    // Trigger the job to run now, and then repeat every 40 seconds
+	    Trigger trigger = TriggerBuilder
+	    				.newTrigger()
+	        			.withIdentity("trigger1", "group1")
+	        			.startNow()
+	        			.withSchedule(simpleSchedule()
+	                	.withIntervalInSeconds(40)
+	                	.repeatForever())            
+	        			.build();
+
+	    // Tell quartz to schedule the job using our trigger
+	    scheduler.scheduleJob(job, trigger);
+ */
+		
 		// 启动定时任务
 		sched.start();
-
 		try {
 			Thread.sleep(300000L);
 		} catch (Exception e) {
 		}
-
 		// 停止
 		sched.shutdown(true);
 	}
 
 	public static void main(String[] args) throws Exception {
-		SimpleExample example = new SimpleExample();
-		example.run();
+		new SimpleExample().run();
 	}
 }
